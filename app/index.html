@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blind Fridge</title>
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Import Map for Firebase so we can use vanilla ES modules in the browser -->
+    <script type="importmap">
+      {
+        "imports": {
+          "firebase/app": "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js",
+          "firebase/firestore": "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js",
+          "firebase/auth": "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"
+        }
+      }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Blind Fridge</h1>
+        <p>A simple, accessible shared fridge inventory.</p>
+    </header>
+
+    <!-- ARIA Live region for screen reader announcements -->
+    <div id="live-region" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
+    <main id="auth-container" class="hidden auth-layout">
+        <section aria-labelledby="auth-heading" class="auth-card">
+            <div class="auth-icon" aria-hidden="true">🔒</div>
+            <h2 id="auth-heading">Fridge Vault</h2>
+            <p class="auth-subtitle">Enter your master password to access your inventory.</p>
+            <form id="auth-form">
+                <!-- Single Password Field (Email handled transparently in background) -->
+                <div class="form-group">
+                    <label for="auth-password">Secret Password</label>
+                    <input type="password" id="auth-password" required autocomplete="current-password">
+                </div>
+                <p id="auth-error" class="hidden warning-text" aria-live="assertive"></p>
+                <div class="form-actions">
+                    <button type="submit" id="login-btn">Unlock Fridge</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <div id="loading-spinner" role="status" aria-live="polite" class="hidden">
+        <div class="spinner"></div>
+        <span class="sr-only">Loading fridge items...</span>
+    </div>
+
+    <main id="app-container" class="hidden">
+        <section id="form-section" aria-labelledby="form-heading">
+            <h2 id="form-heading" tabindex="-1">Add or Edit Item</h2>
+            <form id="item-form">
+                <input type="hidden" id="edit-id" value="">
+                
+                <div class="form-group">
+                    <label for="item-name">Item Name (Required)</label>
+                    <input type="text" id="item-name" name="item-name" required aria-required="true" placeholder="e.g. Milk, Leftover Pasta">
+                </div>
+
+                <div class="form-group">
+                    <label for="item-quantity">Quantity (Optional)</label>
+                    <input type="text" id="item-quantity" name="item-quantity" aria-required="false" placeholder="e.g. 1 liter, 2 bowls">
+                </div>
+
+                <div class="form-group">
+                    <label for="item-date-stored">Date Stored (Optional)</label>
+                    <input type="date" id="item-date-stored" name="item-date-stored" aria-required="false">
+                </div>
+
+                <div class="form-group">
+                    <label for="item-expiry">Expiry Date (Optional)</label>
+                    <input type="date" id="item-expiry" name="item-expiry" aria-required="false">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="submit-btn" aria-label="Add item to fridge">Add Item</button>
+                    <button type="button" id="cancel-btn" class="hidden" aria-label="Cancel editing item">Cancel Edit</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Dynamic sections container -->
+        <div id="inventory-container">
+            <section id="old-items-section" aria-labelledby="old-items-heading" class="hidden">
+                <h2 id="old-items-heading">Use Soon</h2>
+                <ul id="old-items-list" class="item-list" aria-label="List of items to use soon">
+                    <!-- Old items will be populated here -->
+                </ul>
+            </section>
+
+            <section id="inventory-section" aria-labelledby="inventory-heading">
+                <h2 id="inventory-heading">All Fridge Items</h2>
+                <ul id="inventory-list" class="item-list" aria-label="List of all fridge items">
+                    <!-- All items will be populated here -->
+                </ul>
+                <p id="empty-state" class="empty-state">The fridge is currently empty.</p>
+            </section>
+        </div>
+
+        <section id="settings-section" aria-labelledby="settings-heading" style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e5e7eb;">
+            <h2 id="settings-heading" style="font-size: 1.25rem;">Settings</h2>
+            <p style="color: #6b7280; font-size: 0.95rem; margin-bottom: 1rem;">Manage your device session.</p>
+            <button id="logout-btn" class="secondary-btn" aria-label="Sign out">Log Out</button>
+        </section>
+    </main>
+
+    <!-- Custom Modal Overlay -->
+    <div id="custom-modal" class="modal-overlay hidden" role="alertdialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-message">
+        <div class="modal-content">
+            <h3 id="modal-title">Alert</h3>
+            <p id="modal-message">Message goes here.</p>
+            <div class="modal-actions" id="modal-actions">
+                <!-- Dynamically populated buttons -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
