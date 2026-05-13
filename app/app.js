@@ -725,7 +725,6 @@ authForm.addEventListener("submit", async (e) => {
                 errorMessage = "Incorrect password.";
             }
             authError.textContent = errorMessage;
-            // VIBE FIX: Actually tell the screen reader about the error
             announce(errorMessage);
             authError.classList.remove("hidden");
         }
